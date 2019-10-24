@@ -1,0 +1,15 @@
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+[s3tools]
+name=Tools for managing Amazon S3 - Simple Storage Service (RHEL_6)
+type=rpm-md
+baseurl=http://s3tools.org/repo/RHEL_6/
+gpgcheck=1
+gpgkey=http://s3tools.org/repo/RHEL_6/repodata/repomd.xml.key
+enabled=1
