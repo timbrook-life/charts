@@ -20,7 +20,6 @@ run:
     - -c
     - |
       version=$(cat ((version))/version)
-      mkdir ./package
       helm init --client-only
       echo "Packaging chart version $version..."
       helm package --version $version charts/((chart-path)) -d ./package

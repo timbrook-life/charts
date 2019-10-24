@@ -1,4 +1,10 @@
 ---
+resource_types:
+  - name: helm-indexer
+    type: docker-image
+    source:
+      repository: 7imbrook/helm-indexer
+
 resources:
   - name: charts
     type: git
@@ -12,6 +18,12 @@ resources:
       username: ((docker.username))
       password: ((docker.password))
       repository: 7imbrook/ci-deploy-tools
+  - name: build-helm-indexer
+    type: docker-image
+    source:
+      username: ((docker.username))
+      password: ((docker.password))
+      repository: 7imbrook/helm-indexer
   - name: appshell-version
     type: semver
     source:
@@ -30,6 +42,12 @@ resources:
       endpoint: sfo2.digitaloceanspaces.com
       access_key_id: ((s3.id))
       secret_access_key: ((s3.key))
+  - name: chart-indexer
+    type: helm-indexer
+    source:
+      bucket: helm-charts
+      access_key_id: ((s3.id))
+      secret_access_key: ((s3.key))
 
 jobs:
   - name: Build Environment
@@ -42,6 +60,18 @@ jobs:
         get_params: { skip_download: true }
         inputs:
           - charts
+  # Concourse Resources
+  - name: Helm Indexer Resource Build
+    plan:
+      - get: charts
+        trigger: true
+      - put: build-helm-indexer
+        params:
+          build: charts/helm_indexer
+        get_params: { skip_download: true }
+        inputs:
+          - charts
+  # Helm Chart, Appshell
   - name: Verify
     plan:
       - get: charts
@@ -67,9 +97,13 @@ jobs:
       - put: release
         params:
           file: "./package/*"
+          acl: public-read
         inputs:
           - package
-      - task: Index Release
-        file: charts/tasks/index_chart.yaml
+      - put: chart-indexer
+        params:
+          artifacts: package
+        inputs:
+          - package
       - put: appshell-version
         params: { file: appshell-version/version }
