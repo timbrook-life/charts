@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+source $(dirname $0)/common.sh
+
+echo "Checking for new... wait no I do nothing but list?"
+
+for element in prod-sfo; do
+    echo $element
+done | jq -R '.' | jq -s "map({\"ref\": . })" >&3

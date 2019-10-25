@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+source $(dirname $0)/common.sh
+echo $payload
+
+args() {
+    cat $payload
+}
+
+ref=$(args | jq -r '.version.ref')
+token=$(args | jq -r '.source.token')
+
+echo "Writing config file" $1
+doctl -t $token k c kubeconfig show $ref >$1/config.yaml
+
+echo '{"version":{"ref":"prod-sfo"}}' >&3
