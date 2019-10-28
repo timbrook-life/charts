@@ -24,6 +24,12 @@ resources:
       username: ((docker.username))
       password: ((docker.password))
       repository: 7imbrook/helm-indexer
+  - name: build-kube-auth
+    type: docker-image
+    source:
+      username: ((docker.username))
+      password: ((docker.password))
+      repository: 7imbrook/kube_authenticate
   - name: appshell-version
     type: semver
     source:
@@ -68,6 +74,16 @@ jobs:
       - put: build-helm-indexer
         params:
           build: charts/helm_indexer
+        get_params: { skip_download: true }
+        inputs:
+          - charts
+  - name: K8s Auth Resource Build
+    plan:
+      - get: charts
+        trigger: true
+      - put: build-kube-auth
+        params:
+          build: charts/kube_auth
         get_params: { skip_download: true }
         inputs:
           - charts
