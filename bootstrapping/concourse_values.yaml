@@ -1,0 +1,59 @@
+# Concourse deploy
+
+# makes a lot of volumes *sigh*
+persistence:
+  enabled: false
+
+# don't deploy new pg instance, we'll use ours
+postgresql:
+  enabled: false
+
+web:
+  ingress:
+    enabled: true
+    hosts:
+      - build.timbrook.dev
+    annotations:
+      kubernetes.io/ingress.class: traefik
+
+concourse:
+  web:
+    externalUrl: https://build.timbrook.dev/
+    localAuth:
+      enabled: false
+    auth:
+      duration: 3h
+      github:
+        enabled: true
+      mainTeam:
+        github:
+          user: 7imbrook
+          org: []
+          team: []
+    postgres:
+      host: private-personal-site-managed-do-user-3469191-0.db.ondigitalocean.com
+      port: 25060
+      database: concourse
+      sslmode: require
+
+    kubernetes:
+      enabled: false
+    vault:
+      ## Use Hashicorp Vault for the Credential Manager.
+      enabled: true
+      url: http://vault.core.svc.cluster.local:8200
+      insecureSkipVerify: true
+      authBackend: approle
+      pathPrefix: /concourse
+
+worker:
+  replicas: 1
+  baggageclaim:
+    driver: btrfs
+
+secrets:
+  postgresUser: doadmin
+  postgresPassword: yf935w2z5t4m7e3e
+  githubClientId: dc5c7e0be572bfb891b1
+  githubClientSecret: 7b7d31b1370e4ab1cbd6231c010e6c829261dfb5
+  vaultAuthParam: "role_id:f148caa1-9ebb-2cbc-8671-b7bb00b752b1,secret_id:4479b7bf-d97c-8622-ce03-ae523c5e7773"

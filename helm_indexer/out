@@ -37,4 +37,4 @@ s3cmd get s3://helm-charts/index.yaml
 helm repo index --merge index.yaml .
 s3cmd put -P index.yaml s3://helm-charts/index.yaml
 
-echo '{"version":{"ref":"none"}}' >&3
+echo '{"version":{"ref":"index.yaml"}}' >&3

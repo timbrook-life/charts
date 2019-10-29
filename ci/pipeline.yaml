@@ -40,11 +40,29 @@ resources:
       endpoint: sfo2.digitaloceanspaces.com
       access_key_id: ((s3.id))
       secret_access_key: ((s3.key))
-  - name: release
+  - name: vault-version
+    type: semver
+    source:
+      driver: s3
+      bucket: internal
+      initial_version: 0.0.0
+      key: versions/vault
+      endpoint: sfo2.digitaloceanspaces.com
+      access_key_id: ((s3.id))
+      secret_access_key: ((s3.key))
+  - name: release-appshell
     type: s3
     source:
       bucket: helm-charts
       regexp: appshell-(.*).tgz
+      endpoint: sfo2.digitaloceanspaces.com
+      access_key_id: ((s3.id))
+      secret_access_key: ((s3.key))
+  - name: release-vault
+    type: s3
+    source:
+      bucket: helm-charts
+      regexp: vault-(.*).tgz
       endpoint: sfo2.digitaloceanspaces.com
       access_key_id: ((s3.id))
       secret_access_key: ((s3.key))
@@ -88,7 +106,7 @@ jobs:
         inputs:
           - charts
   # Helm Chart, Appshell
-  - name: Verify
+  - name: Verify Appshell
     plan:
       - get: charts
         trigger: true
@@ -96,12 +114,20 @@ jobs:
         file: charts/tasks/verify_chart.yaml
         vars:
           chart-path: appshell
+  - name: Verify Vault
+    plan:
+      - get: charts
+        trigger: true
+      - task: Verify
+        file: charts/tasks/verify_chart.yaml
+        vars:
+          chart-path: vault
   - name: Package Appshell Chart
     plan:
       - get: charts
         trigger: true
         passed:
-          - Verify
+          - Verify Appshell
       - get: appshell-version
         params:
           bump: patch
@@ -110,7 +136,7 @@ jobs:
         vars:
           chart-path: appshell
           version: appshell-version
-      - put: release
+      - put: release-appshell
         params:
           file: "./package/*"
           acl: public-read
@@ -123,3 +149,30 @@ jobs:
           - package
       - put: appshell-version
         params: { file: appshell-version/version }
+  - name: Package Vault Chart
+    plan:
+      - get: charts
+        trigger: true
+        passed:
+          - Verify Vault
+      - get: vault-version
+        params:
+          bump: patch
+      - task: Package
+        file: charts/tasks/package_chart.yaml
+        vars:
+          chart-path: vault
+          version: vault-version
+      - put: release-vault
+        params:
+          file: "./package/*"
+          acl: public-read
+        inputs:
+          - package
+      - put: chart-indexer
+        params:
+          artifacts: package
+        inputs:
+          - package
+      - put: vault-version
+        params: { file: vault-version/version }

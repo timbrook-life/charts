@@ -4,6 +4,5 @@ set -e
 source $(dirname $0)/common.sh
 
 echo "Listing out available clusters"
-args
-doctl k8s cluster list
-doctl k8s cluster list -o json | jq 'map({"ref": .name })' >&3
+token=$(cat $payload | jq '.source.token' -r)
+doctl k8s cluster list -o json --access-token $token | jq 'map({"ref": .name })' >&3
