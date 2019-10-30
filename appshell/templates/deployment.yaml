@@ -20,10 +20,37 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       volumes:
+      {{- if .Values.vault.enabled }}
+        - name: vault-token
+          emptyDir:
+            # Store the auth token in memory
+            medium: Memory
+        - name: vault-configs
+          configMap:
+            name: "vault-config-{{ include "..name" . }}"
+      {{- end }}
       {{- range .Values.secrets }}
         - name: {{ . }}-secret
           secret:
             secretName: {{ . }}
+      {{- end }}
+      {{- if .Values.vault.enabled }}
+      initContainers:
+        # Vault container, auth and get token
+        - name: vault-agent
+          image: vault:1.2.3
+          env:
+            - name: VAULT_ADDR
+              value: {{ .Values.vault.host }} 
+          args:
+            - "agent"
+            - "-config=/etc/vault/vault-agent-config.hcl"
+            - "-log-level=debug"
+          volumeMounts:
+            - name: vault-configs
+              mountPath: /etc/vault
+            - name: vault-token
+              mountPath: /home/vault
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -51,6 +78,10 @@ spec:
           volumeMounts:
           {{- range .Values.secrets }}
             - name: {{ . }}-secret
+              mountPath: /var/run/secrets/
+          {{- end }}
+          {{- if .Values.vault.enabled }}
+            - name: vault-token 
               mountPath: /var/run/secrets/
           {{- end }}
           env:

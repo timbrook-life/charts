@@ -51,3 +51,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+vault: 
+  enabled: false
+  host: ""
+  role: ""
