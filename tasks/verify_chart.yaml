@@ -12,7 +12,7 @@ run:
     - -c
     - |
       echo "Verifying Helm chart from directory '((chart-path))'"
-      ls -l ./charts/((chart-path))
-      helm lint ./charts/((chart-path))
+      ls -l ./((name))/((chart-path))
+      helm lint ./((name))/((chart-path))
 inputs:
-  - name: charts
+  - name: ((name))

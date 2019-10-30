@@ -12,6 +12,28 @@ resources:
     source:
       uri: "https://github.com/timbrook-life/charts"
       branch: master
+      ignore_paths:
+        - appshell/*
+        - vault/*
+        - tasks/*
+  - name: appshell
+    type: git
+    icon: github-circle
+    source:
+      uri: "https://github.com/timbrook-life/charts"
+      branch: master
+      paths:
+        - appshell/*
+        - tasks/*
+  - name: vault
+    type: git
+    icon: github-circle
+    source:
+      uri: "https://github.com/timbrook-life/charts"
+      branch: master
+      paths:
+        - vault/*
+        - tasks/*
   - name: build-ci-environment
     type: docker-image
     source:
@@ -108,23 +130,25 @@ jobs:
   # Helm Chart, Appshell
   - name: Verify Appshell
     plan:
-      - get: charts
+      - get: appshell
         trigger: true
       - task: Verify
-        file: charts/tasks/verify_chart.yaml
+        file: appshell/tasks/verify_chart.yaml
         vars:
+          name: appshell
           chart-path: appshell
   - name: Verify Vault
     plan:
-      - get: charts
+      - get: vault
         trigger: true
       - task: Verify
-        file: charts/tasks/verify_chart.yaml
+        file: vault/tasks/verify_chart.yaml
         vars:
+          name: vault
           chart-path: vault
   - name: Package Appshell Chart
     plan:
-      - get: charts
+      - get: appshell
         trigger: true
         passed:
           - Verify Appshell
@@ -132,9 +156,10 @@ jobs:
         params:
           bump: patch
       - task: Package
-        file: charts/tasks/package_chart.yaml
+        file: appshell/tasks/package_chart.yaml
         vars:
           chart-path: appshell
+          name: appshell
           version: appshell-version
       - put: release-appshell
         params:
@@ -151,7 +176,7 @@ jobs:
         params: { file: appshell-version/version }
   - name: Package Vault Chart
     plan:
-      - get: charts
+      - get: vault
         trigger: true
         passed:
           - Verify Vault
@@ -159,8 +184,9 @@ jobs:
         params:
           bump: patch
       - task: Package
-        file: charts/tasks/package_chart.yaml
+        file: vault/tasks/package_chart.yaml
         vars:
+          name: vault
           chart-path: vault
           version: vault-version
       - put: release-vault

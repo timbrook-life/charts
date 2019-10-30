@@ -7,7 +7,7 @@ image_resource:
     repository: 7imbrook/ci-deploy-tools
 
 inputs:
-  - name: charts
+  - name: ((name))
   - name: ((version))
 
 outputs:
@@ -22,4 +22,4 @@ run:
       version=$(cat ((version))/version)
       helm init --client-only
       echo "Packaging chart version $version..."
-      helm package --version $version charts/((chart-path)) -d ./package
+      helm package --version $version ((name))/((chart-path)) -d ./package
