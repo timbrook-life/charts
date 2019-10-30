@@ -19,7 +19,9 @@ spec:
         app.kubernetes.io/name: {{ include "..name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      {{- if .Values.vault.enabled }}
       serviceAccountName: {{ .Release.Name }}-service-account
+      {{- end }}
       volumes:
       {{- if .Values.vault.enabled }}
         - name: vault-token
