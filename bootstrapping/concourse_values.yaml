@@ -32,8 +32,8 @@ concourse:
           team: []
     postgres:
       host: private-personal-site-managed-do-user-3469191-0.db.ondigitalocean.com
-      port: 25060
-      database: concourse
+      port: 25061
+      database: consource_pool
       sslmode: require
 
     kubernetes:
@@ -50,10 +50,3 @@ worker:
   replicas: 1
   baggageclaim:
     driver: btrfs
-
-secrets:
-  postgresUser: doadmin
-  postgresPassword: yf935w2z5t4m7e3e
-  githubClientId: dc5c7e0be572bfb891b1
-  githubClientSecret: 7b7d31b1370e4ab1cbd6231c010e6c829261dfb5
-  vaultAuthParam: "role_id:f148caa1-9ebb-2cbc-8671-b7bb00b752b1,secret_id:4479b7bf-d97c-8622-ce03-ae523c5e7773"
