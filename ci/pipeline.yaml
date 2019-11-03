@@ -57,7 +57,7 @@ resources:
     source:
       driver: s3
       bucket: internal
-      initial_version: 1.0.0
+      initial_version: 1.1.0
       key: versions/appshell
       endpoint: sfo2.digitaloceanspaces.com
       access_key_id: ((s3.id))

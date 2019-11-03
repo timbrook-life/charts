@@ -30,7 +30,7 @@ spec:
             medium: Memory
         - name: vault-configs
           configMap:
-            name: "vault-config-{{ include "..name" . }}"
+            name: "vault-config-{{ .Release.Name }}-{{.Values.vault.role}}"
       {{- end }}
       {{- range .Values.secrets }}
         - name: {{ . }}-secret
