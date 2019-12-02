@@ -13,4 +13,4 @@ token=$(args | jq -r '.source.token')
 echo "Writing config file" $1
 doctl -t $token k c kubeconfig show $ref >$1/config.yaml
 
-echo '{"version":{"ref":"prod-sfo"}}' >&3
+echo '{"version":{"ref":"'$ref'"}}' >&3
