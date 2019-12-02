@@ -37,6 +37,6 @@ s3cmd get s3://helm-charts/index.yaml
 helm repo index --merge index.yaml .
 s3cmd put -P index.yaml s3://helm-charts/index.yaml
 
-REF=$(shasum ./index.yaml)
+REF=$(sha1sum ./index.yaml)
 
 echo '{"version":{"ref":"'$REF'"}}' >&3

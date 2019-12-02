@@ -4,13 +4,13 @@ COPY ./repos.repo /etc/yum.repos.d/repos.repo
 
 RUN yum update -y && yum install epel-release -y
 RUN yum update -y && yum install -y \
-    python \
-    git \
-    kubectl \
-    openssl \
-    s3cmd \
-    jq \
-    --skip-broken
+  python \
+  git \
+  kubectl \
+  openssl \
+  s3cmd \
+  jq \
+  --skip-broken
 
 WORKDIR /root
 RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get >get_helm.sh
