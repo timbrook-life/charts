@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+BASEDIR=$(dirname "$0")
+
+cd $BASEDIR
+
+fly -t ci set-pipeline -c ./build-images.yaml -p "Build Images"

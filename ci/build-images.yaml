@@ -1,0 +1,72 @@
+---
+resources:
+  # Repos
+  - name: build-env
+    type: git
+    icon: github-circle
+    source:
+      uri: "https://github.com/timbrook-life/release-infra"
+      branch: master
+      paths:
+        - build_env/*
+  - name: helm-indexer
+    type: git
+    icon: github-circle
+    source:
+      uri: "https://github.com/timbrook-life/release-infra"
+      branch: master
+      paths:
+        - helm_indexer/*
+  - name: kube-auth
+    type: git
+    icon: github-circle
+    source:
+      uri: "https://github.com/timbrook-life/release-infra"
+      branch: master
+      paths:
+        - kube_auth/*
+  # Docker images
+  - name: build-ci-environment
+    type: docker-image
+    source:
+      username: ((docker.username))
+      password: ((docker.password))
+      repository: 7imbrook/ci-deploy-tools
+  - name: build-helm-indexer
+    type: docker-image
+    source:
+      username: ((docker.username))
+      password: ((docker.password))
+      repository: 7imbrook/helm-indexer
+  - name: build-kube-auth
+    type: docker-image
+    source:
+      username: ((docker.username))
+      password: ((docker.password))
+      repository: 7imbrook/kube_authenticate
+
+jobs:
+  - name: Build Environment
+    plan:
+      - get: build-env
+        trigger: true
+      - put: build-ci-environment
+        params:
+          build: build-env/build_env
+        get_params: { skip_download: true }
+  - name: Helm Indexer
+    plan:
+      - get: helm-indexer
+        trigger: true
+      - put: build-helm-indexer
+        params:
+          build: helm-indexer/helm_indexer
+        get_params: { skip_download: true }
+  - name: Kubernetes Auth
+    plan:
+      - get: kube-auth
+        trigger: true
+      - put: build-kube-auth
+        params:
+          build: kube-auth/kube_auth
+        get_params: { skip_download: true }
