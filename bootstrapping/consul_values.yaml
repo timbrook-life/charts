@@ -1,6 +1,0 @@
----
-# TODO: make this a param?
-DatacenterName: sfo2
-
-Replicas: 3
-StorageClass: do-block-storage
