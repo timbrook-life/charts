@@ -3,4 +3,4 @@ set -e
 
 source $(dirname $0)/common.sh
 
-echo '[{"version":{"ref":"none"}}]' >&3
+echo '[{"ref":"none"}]' >&3
